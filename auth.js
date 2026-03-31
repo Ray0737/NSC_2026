@@ -5,9 +5,8 @@
 
 // --- CONFIGURATION ---
 // Replace placeholders with your own Supabase credentials
-const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
-
+const SUPABASE_URL = 'https://vnxbssygayuoxbefawev.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_lUl_LPMcoZYIKxQRCpyB1Q_XckFw4U0';
 // Initialize Supabase Client
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -108,6 +107,13 @@ if (registerForm) {
             document.getElementById('profile-email').value = email;
             // Store user ID for later use
             window.currentUserID = data.user.id;
+
+            // If session is present (auto-logged in), store it
+            if (data.session) {
+                console.log('User auto-logged in.');
+            } else {
+                displayMessage('Account created. Please confirm your email to continue.', false);
+            }
         }
     });
 }
@@ -116,9 +122,18 @@ if (registerForm) {
 if (profileForm) {
     profileForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
+
+        // Robust ID check: try session first, then fallback to variable
+        const { data: { user } } = await supabase.auth.getUser();
+        const userId = user ? user.id : window.currentUserID;
+
+        if (!userId) {
+            displayMessage('Authentication error. Please sign in again or check your email verification.', true);
+            return;
+        }
+
         const profileData = {
-            id: window.currentUserID, // Linked to the user's Auth ID
+            id: userId, // Linked to the user's Auth ID
             email: document.getElementById('profile-email').value,
             first_name: document.getElementById('first-name').value,
             last_name: document.getElementById('last-name').value,
@@ -131,33 +146,64 @@ if (profileForm) {
         displayMessage('Saving profile data...');
 
         // Upsert into 'profiles' table
-        const { error } = await supabase
+        const { data, error } = await supabase
             .from('profiles')
             .upsert(profileData);
 
         if (error) {
-            displayMessage(error.message, true);
+            console.error('DATABASE ERROR:', error);
+            if (error.code === '42501') {
+                displayMessage('PERMISSION DENIED: You must confirm your email before saving your profile, OR disable "Confirm Email" in Supabase -> Auth -> Settings.', true);
+            } else if (error.message.includes('relation "profiles" does not exist')) {
+                displayMessage('DATABASE ERROR: The "profiles" table was not found. Please run the SQL setup script.', true);
+            } else {
+                displayMessage(`Error saving to database: ${error.message} (${error.code || 'No code'})`, true);
+            }
         } else {
-            displayMessage('Registration complete. Redirecting to login...');
-            setTimeout(() => {
+            console.log('Profile saved successfully:', data);
+            // Show Success Modal instead of immediate redirect
+            const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+            successModal.show();
+
+            // Handle the redirect manually
+            const goToLoginBtn = document.getElementById('goToLogin');
+            goToLoginBtn.addEventListener('click', () => {
+                successModal.hide();
                 window.location.href = 'login.html';
-            }, 2000);
+            });
         }
     });
 }
 
-// 4. Session Check for index.html (Redirect to login if not authenticated)
+// 4. Session & Page Manager
 document.addEventListener('DOMContentLoaded', async () => {
     const isMainPage = window.location.pathname.endsWith('index.html') || window.location.pathname.endsWith('/');
-    
+    const isRegisterPage = window.location.pathname.endsWith('register.html');
+
+    const { data: { session } } = await supabase.auth.getSession();
+
     if (isMainPage) {
-        const { data: { session } } = await supabase.auth.getSession();
-        
         if (!session) {
             window.location.href = 'login.html';
         } else {
-            // User is logged in, you can load user specific content here
             console.log('User session active:', session.user.email);
+        }
+    }
+
+    // Auto-resume Step 2 on Register page if user is logged in but profile is missing
+    if (isRegisterPage && session) {
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('id', session.user.id)
+            .single();
+
+        if (!profile) {
+            step1.classList.add('d-none');
+            step2.classList.remove('d-none'); // show profile form
+            document.getElementById('profile-email').value = session.user.email;
+            window.currentUserID = session.user.id;
+            displayMessage('Session active. Please complete your registration profile.');
         }
     }
 });
