@@ -14,7 +14,7 @@
 
 <body class="bg-white text-black">
     <div class="container d-flex flex-column align-items-center justify-content-center min-vh-100 py-5">
-        <div class="registration-card p-5 w-100" style="max-width: 500px;">
+        <div class="registration-card p-5 w-100" style="max-width: 700px;">
             <div class="text-center mb-5">
                 <h1 class="fw-light letter-spacing-2">REGISTRATION</h1>
                 <p class="text-muted small">JOIN THE COMMAND NETWORK</p>
@@ -81,11 +81,25 @@
                     </div>
                     <div class="mb-4">
                         <label for="telephone" class="form-label small text-uppercase tracking-wider">Telephone</label>
-                        <input type="tel" class="form-control minimal-input" id="telephone" required>
+                        <input type="tel" class="form-control minimal-input" id="telephone">
+                    </div>
+                    <div class="mb-4">
+                        <label for="birthdate" class="form-label small text-uppercase tracking-wider">Birthdate</label>
+                        <input type="date" class="form-control minimal-input" id="birthdate">
+                    </div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-6">
+                            <label for="school" class="form-label small text-uppercase tracking-wider">School</label>
+                            <input type="text" class="form-control minimal-input" id="school">
+                        </div>
+                        <div class="col-6">
+                            <label for="grade" class="form-label small text-uppercase tracking-wider">Grade (ม)</label>
+                            <input type="text" class="form-control minimal-input" id="grade">
+                        </div>
                     </div>
                     <div class="mb-5">
-                        <label for="birthdate" class="form-label small text-uppercase tracking-wider">Birthdate</label>
-                        <input type="date" class="form-control minimal-input" id="birthdate" required>
+                        <label for="major" class="form-label small text-uppercase tracking-wider">Major</label>
+                        <input type="text" class="form-control minimal-input" id="major">
                     </div>
                     <div class="d-grid gap-2">
                         <button type="submit" class="btn btn-black py-2">COMPLETE SETUP</button>
@@ -104,7 +118,7 @@
     <!-- Success Modal -->
     <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true"
         data-bs-backdrop="static">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
             <div class="modal-content border-0 rounded-0 shadow-lg p-4">
                 <div class="modal-body text-center">
                     <div class="success-icon mb-4">

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body class="bg-white text-black">
     <div class="container py-5">
         <header class="d-flex justify-content-between align-items-center mb-5 border-bottom pb-4">
@@ -17,22 +19,180 @@
                 <h1 class="fw-light letter-spacing-2 m-0">MAJOR WEB</h1>
                 <p class="text-muted small m-0">COMMAND CENTER</p>
             </div>
-            <button id="logoutBtn" class="btn btn-black btn-sm">LOGOUT</button>
+            <div class="d-flex align-items-center gap-3">
+                <!-- Mini Profile Box -->
+                <div id="briefProfile"
+                    class="d-flex align-items-center gap-2 border-end pe-3 text-end d-none d-md-flex">
+                    <div>
+                        <p id="mini-callsign" class="fw-bold small m-0 text-uppercase tracking-wider">OPERATIVE</p>
+                        <p id="mini-info" class="text-muted m-0" style="font-size: 0.65rem;">INITIALIZING...</p>
+                    </div>
+                    <div id="mini-avatar"
+                        class="rounded-circle border bg-light d-flex align-items-center justify-content-center"
+                        style="width: 32px; height: 32px; overflow: hidden;">
+                        <i class="bi bi-person text-muted" style="font-size: 1rem;"></i>
+                    </div>
+                </div>
+                <!-- Controls -->
+                <div class="d-flex gap-2">
+                    <button id="editProfileBtn" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal"
+                        data-bs-target="#editProfileModal"><i class="bi bi-pencil-square"></i></button>
+                    <button id="logoutBtn" class="btn btn-warning btn-sm"><i class="bi bi-power"></i></button>
+                </div>
+            </div>
         </header>
 
-        <main class="text-center py-5">
-            <h2 class="fw-light mb-4">WELCOME, OPERATIVE</h2>
-            <div id="userInfo" class="text-muted small">
-                <!-- User info will be loaded here -->
-                <p>Establishing secure connection...</p>
+        <main class="text-center py-5 fade-in">
+            <div class="mb-5">
+                <p class="text-muted small tracking-wider mb-2">ACCESS GRANTED</p>
+                <h2 class="fw-light display-5 mb-3">HELLO, <span id="userType">DEVELOPER / STUDENT</span></h2>
+                <p class="text-muted mx-auto" style="max-width: 600px;">Welcome to the Command Hub. This is a
+                    centralized management system for PSM Engineering students, featuring a specialized toolset,
+                    curriculum summaries, and a university roadmap.</p>
+            </div>
+
+            <!-- Hub Grid -->
+            <div class="row g-4 justify-content-center mt-4">
+                <div class="col-md-4">
+                    <div class="card card-content h-100 text-start">
+                        <i class="bi bi-box-seam display-6 mb-3"></i>
+                        <h3 class="fw-light h5 mb-2">TOOL HUB</h3>
+                        <p class="text-muted small mb-4">Access specialized engineering utilities and tactical tools
+                            linked to your PSM profile.</p>
+                        <a href="#" class="btn btn-outline-dark btn-sm w-100 mt-auto">ACCESS HUB</a>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card card-content h-100 text-start">
+                        <i class="bi bi-journal-text display-6 mb-3"></i>
+                        <h3 class="fw-light h5 mb-2">ENGINEERING SUMMARY</h3>
+                        <p class="text-muted small mb-4">Review curriculum focus areas, project summaries, and tactical
+                            engineering data.</p>
+                        <a href="#" class="btn btn-outline-dark btn-sm w-100 mt-auto">VIEW SUMMARY</a>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card card-content h-100 text-start">
+                        <i class="bi bi-map display-6 mb-3"></i>
+                        <h3 class="fw-light h5 mb-2">ROAD MAP</h3>
+                        <p class="text-muted small mb-4">Track your academic trajectory and major university milestones
+                            for the upcoming semesters.</p>
+                        <a href="#" class="btn btn-outline-dark btn-sm w-100 mt-auto">NAVIGATE ROADMAP</a>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
 
+    <!-- Edit Profile Modal -->
+    <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header border-bottom-0 pt-4 px-5 align-items-center">
+                    <h5 class="modal-title fw-light letter-spacing-2 m-0" id="editProfileModalLabel">
+                        <span class="border-bottom border-2 border-dark pb-1">EDIT PROFILE</span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-5">
+                    <form id="editProfileForm">
+                        <div class="row g-5">
+                            <!-- Left: Profile & ID -->
+                            <div class="col-md-4 border-end">
+                                <p class="text-muted text-uppercase tracking-wider mb-4" style="font-size: 0.6rem;">I. IDENTIFICATION</p>
+                                <div class="text-center mb-4">
+                                    <div id="avatarPreview"
+                                        class="rounded-circle border mx-auto mb-3 d-flex align-items-center justify-content-center bg-light shadow-sm"
+                                        style="width: 140px; height: 140px; overflow: hidden;">
+                                        <i class="bi bi-person text-muted" style="font-size: 3.5rem;"></i>
+                                    </div>
+                                    <input type="file" id="avatarInput" class="d-none" accept="image/*">
+                                    <label for="avatarInput"
+                                        class="btn btn-outline-dark btn-xs text-uppercase tracking-wider py-1 px-3 mb-4 d-inline-block"
+                                        style="font-size: 0.6rem;">CHANGE DATA ASSET</label>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="text-muted text-uppercase tracking-wider" style="font-size: 0.65rem;">Tactical Callsign</label>
+                                    <input type="text" id="edit-callsign" class="form-control minimal-input" style="font-size: 0.85rem;" required>
+                                </div>
+                                <div>
+                                    <label class="text-muted text-uppercase tracking-wider" style="font-size: 0.65rem;">Nickname</label>
+                                    <input type="text" id="edit-nickname" class="form-control minimal-input" style="font-size: 0.85rem;">
+                                </div>
+                            </div>
+
+                            <!-- Right: Personal & Academic -->
+                            <div class="col-md-8">
+                                <!-- Personal Details -->
+                                <div class="mb-5">
+                                    <p class="text-muted text-uppercase tracking-wider mb-4" style="font-size: 0.6rem;">II. PERSONAL DOSSIER</p>
+                                    <div class="row g-4">
+                                        <div class="col-md-6">
+                                            <label class="text-muted text-uppercase tracking-wider" style="font-size: 0.65rem;">First Name</label>
+                                            <input type="text" id="edit-first-name" class="form-control minimal-input" style="font-size: 0.85rem;" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="text-muted text-uppercase tracking-wider" style="font-size: 0.65rem;">Last Name</label>
+                                            <input type="text" id="edit-last-name" class="form-control minimal-input" style="font-size: 0.85rem;" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="text-muted text-uppercase tracking-wider" style="font-size: 0.65rem;">Birthdate</label>
+                                            <input type="date" id="edit-birthdate" class="form-control minimal-input" style="font-size: 0.85rem;">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="text-muted text-uppercase tracking-wider" style="font-size: 0.65rem;">Telephone</label>
+                                            <input type="tel" id="edit-telephone" class="form-control minimal-input" style="font-size: 0.85rem;">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Academic Affiliation -->
+                                <div>
+                                    <p class="text-muted text-uppercase tracking-wider mb-4" style="font-size: 0.6rem;">III. ACADEMIC AFFILIATION</p>
+                                    <div class="row g-4">
+                                        <div class="col-md-12">
+                                            <label class="text-muted text-uppercase tracking-wider" style="font-size: 0.65rem;">Institution / University</label>
+                                            <input type="text" id="edit-school" class="form-control minimal-input" style="font-size: 0.85rem;">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="text-muted text-uppercase tracking-wider" style="font-size: 0.65rem;">Grade / Semester</label>
+                                            <input type="text" id="edit-grade" class="form-control minimal-input" style="font-size: 0.85rem;">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="text-muted text-uppercase tracking-wider" style="font-size: 0.65rem;">Current Major</label>
+                                            <input type="text" id="edit-major" class="form-control minimal-input" style="font-size: 0.85rem;">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modal Footer inside Form -->
+                        <div class="d-flex justify-content-between align-items-center mt-5 pt-4 border-top">
+                            <div id="saveStatus" class="small text-muted opacity-50 tracking-wider text-uppercase"
+                                style="font-size: 0.70rem;">
+                                <i class="bi bi-cpu me-2"></i> DATA STREAM STABLE
+                            </div>
+                            <button type="submit"
+                                class="btn btn-warning btn-xs px-4 py-2 text-uppercase tracking-wider shadow-sm fw-bold"
+                                style="font-size: 0.7rem;">UPDATE DATA</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS + Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Supabase Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="module">
         import { supabase } from './authen/auth.js';
+
+        let currentProfile = null;
+        let selectedFile = null;
 
         // Logout logic
         const logoutBtn = document.getElementById('logoutBtn');
@@ -47,39 +207,152 @@
             });
         }
 
+        // Avatar preview
+        const avatarInput = document.getElementById('avatarInput');
+        const avatarPreview = document.getElementById('avatarPreview');
+        if (avatarInput) {
+            avatarInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    selectedFile = file;
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        avatarPreview.innerHTML = `<img src="${e.target.result}" style="width: 100%; height: 100%; object-fit: cover;">`;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
         // Display user info
         async function loadUserInfo() {
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
-                // Fetch profile data from 'profiles' table
                 const { data: profile, error } = await supabase
                     .from('profiles')
                     .select('*')
                     .eq('id', user.id)
                     .single();
 
-                const userInfoDiv = document.getElementById('userInfo');
+                const userType = document.getElementById('userType');
+
+                // Mini Profile Elements
+                const miniCallsign = document.getElementById('mini-callsign');
+                const miniInfo = document.getElementById('mini-info');
+                const miniAvatar = document.getElementById('mini-avatar');
+
                 if (profile) {
-                    userInfoDiv.innerHTML = `
-                        <div class="row justify-content-center">
-                            <div class="col-md-6 text-start">
-                                <ul class="list-unstyled">
-                                    <li class="mb-2"><strong>Callsign:</strong> ${profile.callsign}</li>
-                                    <li class="mb-2"><strong>Name:</strong> ${profile.first_name} ${profile.last_name} (${profile.nickname})</li>
-                                    <li class="mb-2"><strong>Email:</strong> ${profile.email}</li>
-                                    <li class="mb-2"><strong>Telephone:</strong> ${profile.telephone}</li>
-                                    <li class="mb-2"><strong>Birthdate:</strong> ${new Date(profile.birthdate).toLocaleDateString()}</li>
-                                </ul>
-                            </div>
-                        </div>
-                    `;
+                    currentProfile = profile;
+
+                    // Update Main Header
+                    userType.textContent = (profile.major || profile.nickname || 'OPERATIVE').toUpperCase();
+
+                    // Update Mini Profile Box
+                    miniCallsign.textContent = profile.callsign || 'OPERATIVE';
+                    miniInfo.textContent = `${profile.grade || 'M.?'}${profile.major ? ' | ' + profile.major : ''}`;
+
+                    if (profile.avatar_url) {
+                        miniAvatar.innerHTML = `<img src="${profile.avatar_url}" style="width: 100%; height: 100%; object-fit: cover;">`;
+                        avatarPreview.innerHTML = `<img src="${profile.avatar_url}" style="width: 100%; height: 100%; object-fit: cover;">`;
+                    }
+
+                    // Pre-fill modal
+                    document.getElementById('edit-first-name').value = profile.first_name || '';
+                    document.getElementById('edit-last-name').value = profile.last_name || '';
+                    document.getElementById('edit-nickname').value = profile.nickname || '';
+                    document.getElementById('edit-callsign').value = profile.callsign || '';
+                    document.getElementById('edit-telephone').value = profile.telephone || '';
+                    document.getElementById('edit-school').value = profile.school || '';
+                    document.getElementById('edit-grade').value = profile.grade || '';
+                    document.getElementById('edit-major').value = profile.major || '';
+                    document.getElementById('edit-birthdate').value = profile.birthdate || '';
                 } else {
-                    userInfoDiv.textContent = `User: ${user.email}`;
+                    userType.textContent = 'DEVELOPER / STUDENT';
+                    miniCallsign.textContent = 'GUEST';
+                    miniInfo.textContent = user.email;
                 }
             }
         }
-        
+
+        // Handle Profile Update
+        const editProfileForm = document.getElementById('editProfileForm');
+        if (editProfileForm) {
+            editProfileForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const saveStatus = document.getElementById('saveStatus');
+                saveStatus.innerHTML = '<i class="bi bi-arrow-repeat spin"></i> UPLOADING TO SECURE SERVER...';
+                saveStatus.className = 'small text-primary tracking-wider text-uppercase';
+
+                try {
+                    const { data: { user } } = await supabase.auth.getUser();
+                    if (!user) throw new Error('Authentication failed');
+
+                    let avatarUrl = currentProfile ? currentProfile.avatar_url : null;
+
+                    // 1. Upload Avatar if selected
+                    if (selectedFile) {
+                        const fileExt = selectedFile.name.split('.').pop();
+                        const fileName = `${Math.random()}.${fileExt}`;
+                        const filePath = `${user.id}/${fileName}`;
+
+                        const { error: uploadError } = await supabase.storage
+                            .from('avatars')
+                            .upload(filePath, selectedFile);
+
+                        if (uploadError) throw uploadError;
+
+                        const { data: { publicUrl } } = supabase.storage
+                            .from('avatars')
+                            .getPublicUrl(filePath);
+
+                        avatarUrl = publicUrl;
+                    }
+
+                    // 2. Update Profile Data
+                    const updatedData = {
+                        id: user.id,
+                        first_name: document.getElementById('edit-first-name').value,
+                        last_name: document.getElementById('edit-last-name').value,
+                        nickname: document.getElementById('edit-nickname').value,
+                        callsign: document.getElementById('edit-callsign').value,
+                        telephone: document.getElementById('edit-telephone').value,
+                        school: document.getElementById('edit-school').value,
+                        grade: document.getElementById('edit-grade').value,
+                        major: document.getElementById('edit-major').value,
+                        birthdate: document.getElementById('edit-birthdate').value,
+                        avatar_url: avatarUrl,
+                        updated_at: new Date()
+                    };
+
+                    const { error: updateError } = await supabase
+                        .from('profiles')
+                        .upsert(updatedData);
+
+                    if (updateError) throw updateError;
+
+                    saveStatus.innerHTML = '<i class="bi bi-check2-all"></i> DOSSIER SYNCHRONIZED';
+                    saveStatus.className = 'small text-success tracking-wider text-uppercase';
+
+                    setTimeout(() => {
+                        const modalElement = document.getElementById('editProfileModal');
+                        const modal = bootstrap.Modal.getInstance(modalElement);
+                        modal.hide();
+                        loadUserInfo();
+                        // Reset status
+                        saveStatus.innerHTML = '<i class="bi bi-cpu me-2"></i> READY FOR COMMAND INPUT';
+                        saveStatus.className = 'small text-muted opacity-50 tracking-wider text-uppercase';
+                    }, 1500);
+
+                } catch (error) {
+                    console.error('Update failed:', error);
+                    saveStatus.innerHTML = `<i class="bi bi-exclamation-triangle"></i> ERROR: ${error.message}`;
+                    saveStatus.className = 'small text-danger tracking-wider text-uppercase';
+                }
+            });
+        }
+
         loadUserInfo();
     </script>
 </body>
+
 </html>

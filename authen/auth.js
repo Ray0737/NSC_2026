@@ -142,6 +142,9 @@ if (profileForm) {
             callsign: document.getElementById('callsign').value,
             telephone: document.getElementById('telephone').value,
             birthdate: document.getElementById('birthdate').value,
+            school: document.getElementById('school').value,
+            grade: document.getElementById('grade').value,
+            major: document.getElementById('major').value,
         };
 
         displayMessage('Saving profile data...');

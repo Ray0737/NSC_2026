@@ -59,6 +59,13 @@ body {
     color: var(--primary-black);
 }
 
+.btn-xs {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.65rem;
+    line-height: 1.2;
+    border-radius: 0;
+}
+
 /* Cards */
 .login-card,
 .registration-card {
@@ -139,6 +146,16 @@ body {
 
 .fade-in {
     animation: fadeIn 0.8s ease forwards;
+}
+
+.spin {
+    display: inline-block;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 /* Mobile Responsiveness */
