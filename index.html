@@ -1,85 +1,124 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard | Major Web</title>
+    <title>Welcome to the Project Hub</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <meta name="description"
+        content="Welcome to the Project Hub. A secure portal for tactical information and project management.">
 </head>
-<body class="bg-white text-black">
-    <div class="container py-5">
-        <header class="d-flex justify-content-between align-items-center mb-5 border-bottom pb-4">
-            <div>
-                <h1 class="fw-light letter-spacing-2 m-0">MAJOR WEB</h1>
-                <p class="text-muted small m-0">COMMAND CENTER</p>
-            </div>
-            <button id="logoutBtn" class="btn btn-black btn-sm">LOGOUT</button>
-        </header>
 
-        <main class="text-center py-5">
-            <h2 class="fw-light mb-4">WELCOME, OPERATIVE</h2>
-            <div id="userInfo" class="text-muted small">
-                <!-- User info will be loaded here -->
-                <p>Establishing secure connection...</p>
+<body class="bg-black">
+    <!-- Transparent Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-transparent fixed-top py-3 animate-fade-in">
+        <div class="container uppercase">
+            <a class="navbar-brand fw-bold letter-spacing-2" href="#">AIM HIGH</a>
+            <div class="ms-auto">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link small tracking-wider opacity-75 hover-opacity-100"
+                            href="https://profilewebsiteprojecttrack.vercel.app/index.html" target="_blank">TACTICAL
+                            PROFILE</a>
+                    </li>
+                </ul>
             </div>
-        </main>
+        </div>
+    </nav>
+
+    <!-- Video Background Container -->
+    <div class="hero-video-container">
+        <!-- You can replace the source with your own mp4 video -->
+        <video autoplay muted loop playsinline poster="project_hub_bg_1774943597081.png">
+            <source src="pic/bg2.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <div class="video-overlay"></div>
     </div>
 
-    <!-- Supabase Client -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script type="module">
-        import { supabase } from './auth.js';
+    <!-- Main Content Layer -->
+    <main class="hero-content container">
 
-        // Logout logic
-        const logoutBtn = document.getElementById('logoutBtn');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', async () => {
-                const { error } = await supabase.auth.signOut();
-                if (error) {
-                    console.error('Logout error:', error.message);
-                } else {
-                    window.location.href = 'login.html';
-                }
-            });
+
+        <div class="scroll-indicator">
+            <i class="bi bi-chevron-down text-white-50 fs-2"></i>
+        </div>
+
+        <div class="credits-overlay animate-fade-in">
+            <p>Source: United States Navy (Carrier Operation)</p>
+        </div>
+    </main>
+
+    <!-- Authentication Section (Scroll below hero) -->
+    <section class="auth-section bg-black position-relative z-3 py-5">
+        <div class="container py-5">
+            <div class="row justify-content-center g-4">
+                <!-- Login Card -->
+                <div class="col-md-5">
+                    <a href="authen/login.html" class="access-portal-card">
+                        <div class="card-content text-center border">
+                            <h2 class="fw-light letter-spacing-2 m-0">ACCESS TERMINAL</h2>
+                            <p class="text-white-50 mt-1 mb-4">SECURE OPERATIVE LOGIN</p>
+                            <span class="btn btn-outline-light rounded-0 px-4 py-1 small">ENTER HUB</span>
+                        </div>
+                    </a>
+                </div>
+                <!-- Register Card -->
+                <div class="col-md-5">
+                    <a href="authen/register.html" class="access-portal-card border-white">
+                        <div class="card-content text-center border bg-white text-black">
+                            <h2 class="fw-light letter-spacing-2 m-0 text-black">ENLISTMENT</h2>
+                            <p class="text-black-50 mt-1 mb-4">JOIN THE COMMAND NETWORK</p>
+                            <span class="btn btn-black rounded-0 px-4 py-1 small text-white">INITIALIZE</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="text-center mt-5">
+                <p class="small text-muted letter-spacing-2">SYSTEM CLASSIFIED | PROJECT HUB V1.0</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Simple animation trigger on load
+        window.addEventListener('DOMContentLoaded', () => {
+            document.querySelector('.hero-content').classList.add('ready');
+        });
+    </script>
+    <style>
+        .animate-fade-in {
+            opacity: 0;
+            animation: fadeInSimple 1.5s ease forwards;
         }
 
-        // Display user info
-        async function loadUserInfo() {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (user) {
-                // Fetch profile data from 'profiles' table
-                const { data: profile, error } = await supabase
-                    .from('profiles')
-                    .select('*')
-                    .eq('id', user.id)
-                    .single();
+        .animate-slide-up {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideUpSimple 1.2s ease 0.5s forwards;
+        }
 
-                const userInfoDiv = document.getElementById('userInfo');
-                if (profile) {
-                    userInfoDiv.innerHTML = `
-                        <div class="row justify-content-center">
-                            <div class="col-md-6 text-start">
-                                <ul class="list-unstyled">
-                                    <li class="mb-2"><strong>Callsign:</strong> ${profile.callsign}</li>
-                                    <li class="mb-2"><strong>Name:</strong> ${profile.first_name} ${profile.last_name} (${profile.nickname})</li>
-                                    <li class="mb-2"><strong>Email:</strong> ${profile.email}</li>
-                                    <li class="mb-2"><strong>Telephone:</strong> ${profile.telephone}</li>
-                                    <li class="mb-2"><strong>Birthdate:</strong> ${new Date(profile.birthdate).toLocaleDateString()}</li>
-                                </ul>
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    userInfoDiv.textContent = `User: ${user.email}`;
-                }
+        @keyframes fadeInSimple {
+            to {
+                opacity: 1;
             }
         }
-        
-        loadUserInfo();
-    </script>
+
+        @keyframes slideUpSimple {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
 </body>
+
 </html>
