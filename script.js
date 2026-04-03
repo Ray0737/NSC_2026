@@ -297,7 +297,7 @@ import { supabase } from './authen/auth.js';
                         <!-- TEAM MEMBERS SECTION -->
                         <div class="border-top px-4 py-3" style="background: #fafafa;">
                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span class="x-small text-muted fw-bold text-uppercase" style="font-size:0.45rem; letter-spacing: 1px;">${hubsBookings.length > 0 ? hubsBookings[0].team_name.toUpperCase() : 'TEAM_ROSTER'}</span>
+                                <span class="x-small text-muted fw-bold text-uppercase" style="font-size:0.45rem; letter-spacing: 1px;">${hubsBookings.length > 0 ? hubsBookings[0].team_name.toUpperCase() : 'UNIT_RESERVE'}</span>
                                 <span class="badge bg-dark rounded-pill px-2" style="font-size: 0.45rem;">${members.length} MEMBER${members.length !== 1 ? 'S' : ''}</span>
                             </div>
                             ${members.length > 0 ? `
@@ -320,7 +320,7 @@ import { supabase } from './authen/auth.js';
                         <div class="mt-auto border-top p-3 bg-light-subtle">
                             <div class="d-flex gap-1">
                                 ${c.created_by !== currentProfile?.id ? `
-                                    <button class="btn btn-black btn-xs flex-grow-1 rounded-0 py-2 fw-bold" onclick="showBookingForm('${c.id}', '${c.title.replace(/'/g, "\\'")}')" style="font-size: 0.5rem;">REQUEST_JOIN</button>
+                                    <button class="btn btn-black btn-xs flex-grow-1 rounded-0 py-2 fw-bold" onclick="joinHubOperation('${c.id}')" style="font-size: 0.5rem;">JOIN_OPERATION</button>
                                 ` : `
                                     <button class="btn btn-black btn-xs flex-grow-1 rounded-0 py-2 fw-bold" onclick="manageHubRoster('${c.id}', '${c.title.replace(/'/g, "\\'")}')" style="font-size: 0.5rem;">EDIT_ROSTER</button>
                                 `}
@@ -377,11 +377,11 @@ import { supabase } from './authen/auth.js';
         window.manageHubRoster = async (hubId, title) => {
             document.getElementById('enlist-mode').value = 'manage';
             document.getElementById('enlist-hub-id').value = hubId;
-            document.getElementById('enlistTeamNameWrap').classList.remove('d-none');
+            document.getElementById('enlistTeamNameWrap').classList.add('d-none'); // Hide for owner manage mode
             
             // Get existing team name if possible
             const { data: existing } = await supabase.from('intelligence_booking').select('team_name').eq('hub_id', hubId).limit(1).single();
-            document.getElementById('enlist-team-name').value = existing ? existing.team_name : 'Primary Roster';
+            document.getElementById('enlist-team-name').value = existing ? existing.team_name : 'PRIMARY_UNIT';
             
             document.getElementById('enlistModalTitle').innerText = `ROSTER_MGMT // ${title.toUpperCase()}`;
 
@@ -406,42 +406,55 @@ import { supabase } from './authen/auth.js';
         };
 
 
-        window.showBookingForm = async (hubId, title) => {
-            document.getElementById('enlist-mode').value = 'request';
-            document.getElementById('enlistTeamNameWrap').classList.remove('d-none');
-            document.getElementById('enlist-hub-id').value = hubId;
-            document.getElementById('enlist-team-name').value = '';
-            document.getElementById('enlistModalTitle').innerText = `UNIT_ENLISTMENT // ${title.toUpperCase()}`;
-
-            const memberListDiv = document.getElementById('enlist-member-list');
-            memberListDiv.innerHTML = '<div class="text-center p-3 text-muted x-small">QUERYING_PERSONNEL...</div>';
-
-            new bootstrap.Modal(document.getElementById('enlistModal')).show();
-
-            // Fetch occupied members for this hub
-            const { data: bookings } = await supabase.from('intelligence_booking').select('member_ids').eq('hub_id', hubId);
-            const occupiedIds = (bookings || []).flatMap(b => b.member_ids || []);
-
-            // Fetch all profiles
-            const { data: profiles } = await supabase.from('profiles').select('id, callsign');
-
-            if (profiles) {
-                const available = profiles.filter(p => !occupiedIds.includes(p.id));
-                if (available.length === 0) {
-                    memberListDiv.innerHTML = '<div class="p-3 text-center text-danger x-small fw-bold">ALL_PERSONNEL_OCCUPIED_FOR_THIS_OPERATION</div>';
-                } else {
-                    memberListDiv.innerHTML = available.map(p => `
-                        <div class="form-check p-2 border-bottom border-secondary-subtle hover-bg-light transition">
-                            <input class="form-check-input ms-0 me-3" type="checkbox" value="${p.id}" id="chk-${p.id}" name="enlistMembers">
-                            <label class="form-check-label x-small fw-bold text-uppercase" for="chk-${p.id}" style="cursor:pointer; font-size: 0.7rem;">
-                                ${p.callsign || 'OPERATIVE_' + p.id.substring(0, 4)}
-                            </label>
-                        </div>
-                    `).join('');
-                }
-            } else {
-                memberListDiv.innerHTML = '<div class="text-center p-3 text-danger x-small">PERSONNEL_DATA_RETRIEVAL_ERROR</div>';
+        window.joinHubOperation = async (hubId) => {
+            if (!currentProfile) {
+                tacticalNotify('ERR: AUTH_REQUIRED');
+                return;
             }
+
+            // 1. Check if already in ANY team for this hub
+            const { data: bookings } = await supabase.from('intelligence_booking').select('*').eq('hub_id', hubId);
+            const alreadyJoined = (bookings || []).some(b => (b.member_ids || []).includes(currentProfile.id));
+            if (alreadyJoined) {
+                tacticalNotify('NOTICE: ALREADY ENLISTED');
+                return;
+            }
+
+            // 2. Join logical team (First existing or new Main Roster)
+            let joinError = null;
+            if (bookings && bookings.length > 0) {
+                const b = bookings[0];
+                const newIds = [...(b.member_ids || []), currentProfile.id];
+                const { error } = await supabase.from('intelligence_booking').update({ member_ids: newIds }).eq('id', b.id);
+                joinError = error;
+            } else {
+                const { error } = await supabase.from('intelligence_booking').insert([{
+                    hub_id: hubId,
+                    team_name: 'PRIMARY_UNIT',
+                    member_ids: [currentProfile.id],
+                    slot_code: 'UNIT_MAIN'
+                }]);
+                joinError = error;
+            }
+
+            if (joinError) {
+                tacticalNotify('JOIN_ERROR: ' + joinError.message);
+                return;
+            }
+
+            // 3. Sync with linked group (Auto-Chat Join)
+            const { data: groups } = await supabase.from('groups').select('id, members').eq('linked_hub_id', hubId);
+            if (groups && groups.length > 0) {
+                for (const g of groups) {
+                    if (!(g.members || []).includes(currentProfile.id)) {
+                        const newGMembers = [...(g.members || []), currentProfile.id];
+                        await supabase.from('groups').update({ members: newGMembers }).eq('id', g.id);
+                    }
+                }
+            }
+
+            initNewsModule();
+            tacticalNotify('ENLISTMENT_SUCCESS');
         };
 
         const enlistForm = document.getElementById('enlistForm');
@@ -478,7 +491,7 @@ import { supabase } from './authen/auth.js';
                     if (memberIds.length > 0) {
                         await supabase.from('intelligence_booking').insert([{
                             hub_id: hubId,
-                            team_name: teamName || 'Main Roster',
+                            team_name: teamName || 'PRIMARY_UNIT',
                             member_ids: memberIds,
                             slot_code: 'UNIT_MAIN'
                         }]);
